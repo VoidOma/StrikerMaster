@@ -15,11 +15,11 @@ session_start();
             const ball = document.createElement('div');
             const pins = document.createElement('div');
 
-            // Configure the bowling ball
+            // Configure la boule de bowling
             ball.className = 'bowling-ball';
             document.body.appendChild(ball);
 
-            // Configure the pins
+            // Configure les quilles
             pins.className = 'bowling-pins';
             document.body.appendChild(pins);
 

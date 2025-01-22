@@ -139,7 +139,11 @@ try {
                     <input type="text" name="nom_event" id="nom_event" required>
 
                     <label for="type_event">Type d'événement :</label>
-                    <input type="text" name="type_event" id="type_event" required>
+                    <select name="type_event" id="type_event" required>
+                        <option value="tournois">Tournois</option>
+                        <option value="galas">Galas</option>
+                        <option value="match">Match</option>
+                    </select>
 
                     <label for="date_event">Date de l'événement :</label>
                     <input type="date" name="date_event" id="date_event" required>
