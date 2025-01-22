@@ -1,5 +1,6 @@
 <?php
 session_start();
+// Vérifie si l'utilisateur est connecté, si non, il est redirigé vers la page de connexion.
 if (!isset($_SESSION['username'])) {
     header('Location: connexion.php');
     exit();
@@ -12,9 +13,11 @@ $username = 'root';
 $password = '';
 
 try {
+    // Essaye de se connecter à la base de données avec les informations fournies
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
+    // Si une erreur se produit lors de la connexion, l'erreur est affichée et l'exécution est arrêtée
     die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
 
@@ -30,9 +33,12 @@ try {
         WHERE i.user_id = :user_id
         ORDER BY c.date_event ASC
     ");
+    // Exécution de la requête pour obtenir les événements
     $stmt->execute(['user_id' => $user_id]);
+    // Stockage des événements dans une variable
     $userEvents = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
+    // Si une erreur se produit lors de la récupération des événements, l'erreur est affichée
     die("Erreur lors de la récupération des événements : " . $e->getMessage());
 }
 
@@ -43,13 +49,16 @@ try {
         FROM users
         WHERE id = :user_id
     ");
+    // Exécution de la requête pour obtenir les victoires
     $stmtVictories->execute(['user_id' => $user_id]);
+    // Stockage des victoires dans une variable
     $victories = $stmtVictories->fetch(PDO::FETCH_ASSOC);
 
     $matchVictories = $victories['victoire_match'];
     $galaVictories = $victories['victoire_gala'];
     $tournoiVictories = $victories['victoire_tournois'];
 } catch (PDOException $e) {
+    // Si une erreur se produit lors de la récupération des victoires, l'erreur est affichée
     die("Erreur lors de la récupération des victoires : " . $e->getMessage());
 }
 ?>
@@ -77,10 +86,11 @@ try {
                 <li><a href="events.php">Événements</a></li>
                 <li><a href="classement.php">Classement</a></li>
                 <li>
+                    <!-- Si l'utilisateur est connecté, il peut voir son profil et se déconnecter -->
                     <?php if (isset($_SESSION['username'])): ?>
                         <a href="profile.php">Profil</a>
                         <a href="deconnexion.php">Déconnexion</a>
-                        
+                    <!-- Si l'utilisateur n'est pas connecté, il peut se connecter -->
                     <?php else: ?>
                         <a href="connexion.php">Connexion</a>
                     <?php endif; ?>
@@ -96,16 +106,18 @@ try {
             <div class="profile-details">
                 <div class="profile-info">
                     <h3>Informations de votre profil :</h3>
+                    <!-- Affiche la photo de profil, soit celle de l'utilisateur, soit une photo par défaut -->
                     <img 
                         src="<?= isset($_SESSION['profile_photo']) ? htmlspecialchars($_SESSION['profile_photo']) : 'default_profile.png'; ?>" 
                         alt="Photo de profil" 
                         class="profile-photo"
                     >
+                    <!-- Affiche le nom d'utilisateur, l'email et le rôle de l'utilisateur -->
                     <p><strong>Nom d'utilisateur :</strong> <?= htmlspecialchars($_SESSION['username']); ?></p>
                     <p><strong>Email :</strong> <?= htmlspecialchars($_SESSION['email']); ?></p>
                     <p><strong>Rôle :</strong> <?= htmlspecialchars($_SESSION['role'] === 'admin' ? 'Administrateur' : 'Membre'); ?></p>
                     
-                    <!-- Lien vers la page de modification des scores pour les admins -->
+                    <!-- Lien vers la page de gestion des scores si l'utilisateur est un administrateur -->
                     <?php if ($_SESSION['role'] === 'admin'): ?>
                         <p><a href="modification_score.php">Accéder à la gestion des scores</a></p>
                     <?php endif; ?>
@@ -116,6 +128,8 @@ try {
                     <h3>Télécharger le dossier d'inscription :</h3>
                     <p><a href="Dossier d'Inscription - Club StrikerMaster" download>Dossier_d'Inscription-Club StrikerMaster</a></p>
                 </section>
+
+                <!-- Formulaire pour télécharger un dossier d'inscription -->
                 <section class="upload-dossier">
                     <h3>Déposer votre dossier d'inscription :</h3>
                     <form action="upload_dossier.php" method="POST" enctype="multipart/form-data">
@@ -126,6 +140,7 @@ try {
                 </section>
             </div>
 
+            <!-- Formulaire pour télécharger une photo de profil -->
             <div class="upload-section">
                 <h3>Déposer une photo de profil :</h3>
                 <form action="upload_photo.php" method="POST" enctype="multipart/form-data">
@@ -135,6 +150,8 @@ try {
                 </form>
             </div>
         </section>
+
+        <!-- Section des victoires de l'utilisateur -->
         <section class="user-victories">
             <h3>Vos victoires :</h3>
             <div class="victory-counters">
@@ -153,6 +170,7 @@ try {
             </div>
         </section>
 
+        <!-- Section des événements auxquels l'utilisateur est inscrit -->
         <section class="user-events">
             <h3>Événements auxquels vous êtes inscrit :</h3>
 
